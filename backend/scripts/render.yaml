@@ -1,0 +1,77 @@
+# render.yaml — VakeelLink deployment manifest
+# =============================================
+# Docs: https://render.com/docs/infrastructure-as-code
+#
+# Deploy with:
+#   1. Push this file to the root of your Git repo.
+#   2. In Render dashboard → New → Blueprint → select this repo.
+#   3. Set the Environment Variables listed below in the Render UI
+#      (Render will read "generateValue: true" vars automatically;
+#       all others need manual values from your Supabase / Qdrant / Groq dashboards).
+
+services:
+  # ── FastAPI Backend ──────────────────────────────────────────────────────────
+  - type: web
+    name: vakeellink-api
+    runtime: python
+    region: singapore          # Closest to India on Render free tier
+    plan: free
+
+    # Root of the repo that contains backend/
+    rootDir: backend
+
+    # Build: install Python deps
+    buildCommand: pip install -r requirements.txt
+
+    # Start: single Uvicorn worker (free tier = 512 MB RAM)
+    # --host 0.0.0.0 is required for Render's port binding
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
+
+    # Health check — Render uses this to confirm the service is up
+    healthCheckPath: /health
+
+    # Auto-deploy on every push to main
+    autoDeploy: true
+
+    envVars:
+      # ── Runtime environment ──────────────────────────────────────────────
+      - key: ENVIRONMENT
+        value: production
+
+      - key: PYTHON_VERSION
+        value: "3.11.0"           # pin to avoid surprise upgrades
+
+      # ── Supabase ─────────────────────────────────────────────────────────
+      - key: SUPABASE_URL
+        sync: false               # set manually in Render dashboard
+
+      - key: SUPABASE_KEY
+        sync: false               # anon/public key
+
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false               # service role key — keep secret
+
+      - key: JWT_SECRET
+        sync: false               # your Supabase project's JWT secret
+
+      # ── Qdrant Cloud ─────────────────────────────────────────────────────
+      - key: QDRANT_URL
+        sync: false               # e.g. https://abc123.us-east-1-0.aws.cloud.qdrant.io
+
+      - key: QDRANT_API_KEY
+        sync: false
+
+      # ── Groq (LLM) ────────────────────────────────────────────────────────
+      - key: GROQ_API_KEY
+        sync: false               # starts with gsk_
+
+      # ── RAG pipeline ─────────────────────────────────────────────────────
+      - key: EMBEDDING_MODEL_NAME
+        value: sentence-transformers/all-MiniLM-L6-v2
+
+      # ── FastAPI ───────────────────────────────────────────────────────────
+      - key: PROJECT_NAME
+        value: VakeelLink API
+
+      - key: API_V1_STR
+        value: /api/v1

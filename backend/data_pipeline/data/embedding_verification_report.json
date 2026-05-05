@@ -1,0 +1,102 @@
+{
+    "constitutional/constitutional": {
+        "status": "OK",
+        "count": 252,
+        "dim": 384
+    },
+    "constitutional/illegal_detention": {
+        "status": "OK",
+        "count": 570,
+        "dim": 384
+    },
+    "consumer/consumer": {
+        "status": "OK",
+        "count": 287,
+        "dim": 384
+    },
+    "consumer/online_fraud": {
+        "status": "OK",
+        "count": 518,
+        "dim": 384
+    },
+    "consumer/service_deficiency": {
+        "status": "OK",
+        "count": 725,
+        "dim": 384
+    },
+    "criminal/assault_violence": {
+        "status": "OK",
+        "count": 876,
+        "dim": 384
+    },
+    "criminal/bail_general": {
+        "status": "OK",
+        "count": 588,
+        "dim": 384
+    },
+    "criminal/criminal": {
+        "status": "OK",
+        "count": 5927,
+        "dim": 384
+    },
+    "criminal/domestic_violence": {
+        "status": "OK",
+        "count": 709,
+        "dim": 384
+    },
+    "criminal/drug_offenses": {
+        "status": "OK",
+        "count": 615,
+        "dim": 384
+    },
+    "criminal/FIR_procedure": {
+        "status": "OK",
+        "count": 716,
+        "dim": 384
+    },
+    "criminal/fraud_cheating": {
+        "status": "OK",
+        "count": 56,
+        "dim": 384
+    },
+    "family/child_custody": {
+        "status": "OK",
+        "count": 508,
+        "dim": 384
+    },
+    "family/divorce": {
+        "status": "OK",
+        "count": 715,
+        "dim": 384
+    },
+    "family/family": {
+        "status": "OK",
+        "count": 202,
+        "dim": 384
+    },
+    "family/maintenance": {
+        "status": "OK",
+        "count": 322,
+        "dim": 384
+    },
+    "general/unclassified": {
+        "status": "OK",
+        "count": 643,
+        "dim": 384
+    },
+    "general/unclassified2": {
+        "status": "OK",
+        "count": 483,
+        "dim": 384
+    },
+    "labour/wrongful_termination": {
+        "status": "OK",
+        "count": 752,
+        "dim": 384
+    },
+    "motor_accident/compensation": {
+        "status": "OK",
+        "count": 745,
+        "dim": 384
+    }
+}
