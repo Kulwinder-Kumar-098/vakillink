@@ -52,22 +52,27 @@ def root():
 
 # --- Dashboard Routers ---
 try:
-    from app.api.routers import auth, lawyers, admin, chat, ai as dashboard_ai, analyze, cases, messaging, profile, consultations, archive
+    # Temporarily commented out to avoid Supabase key validation errors during RAG testing
+    # from app.api.routers import auth, lawyers, admin, chat, ai as dashboard_ai, analyze, cases, messaging, profile, consultations, archive
+    # 
+    # app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+    # app.include_router(lawyers.router, prefix=f"{settings.API_V1_STR}/lawyers", tags=["lawyers"])
+    # app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
+    # app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["chat"])
+    # app.include_router(dashboard_ai.router, prefix=f"{settings.API_V1_STR}/dashboard/ai", tags=["dashboard-ai"])
+    # app.include_router(analyze.router, prefix=f"{settings.API_V1_STR}/analyze", tags=["analyze"])
+    # app.include_router(cases.router, prefix=f"{settings.API_V1_STR}/cases", tags=["cases"])
+    # app.include_router(messaging.router, prefix=f"{settings.API_V1_STR}/messages", tags=["messaging"])
+    # app.include_router(profile.router, prefix=f"{settings.API_V1_STR}/profile", tags=["profile"])
+    # app.include_router(consultations.router, prefix=f"{settings.API_V1_STR}/consultations", tags=["consultations"])
+    # app.include_router(archive.router, prefix=f"{settings.API_V1_STR}/archive", tags=["archive"])
     
-    app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
-    app.include_router(lawyers.router, prefix=f"{settings.API_V1_STR}/lawyers", tags=["lawyers"])
-    app.include_router(admin.router, prefix=f"{settings.API_V1_STR}/admin", tags=["admin"])
-    app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["chat"])
-    app.include_router(dashboard_ai.router, prefix=f"{settings.API_V1_STR}/dashboard/ai", tags=["dashboard-ai"])
-    app.include_router(analyze.router, prefix=f"{settings.API_V1_STR}/analyze", tags=["analyze"])
-    app.include_router(cases.router, prefix=f"{settings.API_V1_STR}/cases", tags=["cases"])
-    app.include_router(messaging.router, prefix=f"{settings.API_V1_STR}/messages", tags=["messaging"])
-    app.include_router(profile.router, prefix=f"{settings.API_V1_STR}/profile", tags=["profile"])
-    app.include_router(consultations.router, prefix=f"{settings.API_V1_STR}/consultations", tags=["consultations"])
-    app.include_router(archive.router, prefix=f"{settings.API_V1_STR}/archive", tags=["archive"])
+    # --- RAG API Routers ---
+    from api.routes import router as rag_router
+    app.include_router(rag_router, prefix=f"{settings.API_V1_STR}/ai", tags=["rag-pipeline"])
 except ImportError as e:
     logger.error(f"Failed to load dashboard routers: {e}")
 
 # --- AI (RAG) Routers ---
 app.include_router(ai_health.router, prefix="/ai/health", tags=["ai-health"])
-app.include_router(retrieval.router, prefix=f"{settings.API_V1_STR}/ai", tags=["ai-retrieval"])
+# app.include_router(retrieval.router, prefix=f"{settings.API_V1_STR}/ai", tags=["ai-retrieval"])
