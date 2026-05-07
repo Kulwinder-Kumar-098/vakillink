@@ -94,3 +94,9 @@ try:
     app.include_router(archive.router, prefix=f"{settings.API_V1_STR}/archive", tags=["archive"])
 except ImportError as e:
     print("Failed to import Archive router:", e)
+
+try:
+    from api.routes import router as rag_router
+    app.include_router(rag_router, prefix=f"{settings.API_V1_STR}/ai", tags=["rag-pipeline"])
+except ImportError as e:
+    print("Failed to import RAG router:", e)

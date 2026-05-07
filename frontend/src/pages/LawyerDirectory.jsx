@@ -19,6 +19,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import UserSidebar from '../components/UserSidebar';
+import { apiFetch, apiUrl } from '../lib/api';
 
 export default function LawyerDirectory() {
   const [lawyers, setLawyers] = useState([]);
@@ -32,7 +33,6 @@ export default function LawyerDirectory() {
   const fetchLawyers = async () => {
     setLoading(true);
     try {
-      const baseUrl = 'http://127.0.0.1:9000/api/v1/lawyers';
       const params = new URLSearchParams({
         page: '1',
         limit: '6',
@@ -42,9 +42,7 @@ export default function LawyerDirectory() {
         params.append('domain', domainFilter);
       }
       
-      const res = await fetch(`${baseUrl}?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch lawyers');
-      const data = await res.json();
+      const data = await apiFetch(`/api/v1/lawyers?${params.toString()}`);
       setLawyers(data.data);
     } catch (error) {
       console.error(error);
@@ -64,7 +62,7 @@ export default function LawyerDirectory() {
     setInquiryLoading(true);
     try {
       const token = localStorage.getItem('vakeellink_token');
-      const res = await fetch('http://127.0.0.1:9000/api/v1/query', {
+      const res = await fetch(apiUrl('/api/v1/query'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

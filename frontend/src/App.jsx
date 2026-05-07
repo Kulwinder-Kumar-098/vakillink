@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     </div>
   );
   if (!user) return <Login />;
-  
+
   const userRole = (user.role || '').toLowerCase();
   const lowerAllowedRoles = (allowedRoles || []).map(r => r.toLowerCase());
 
@@ -45,11 +45,11 @@ function AppContent() {
   const location = useLocation();
   // Most pages now have internal sidebars and dark themes
   const isDashboardPage = [
-    '/my-cases', 
-    '/case-curator', 
-    '/case-search', 
-    '/lawyers', 
-    '/statutes', 
+    '/my-cases',
+    '/case-curator',
+    '/case-search',
+    '/lawyers',
+    '/statutes',
     '/archive',
     '/consultations',
     '/profile'
@@ -59,29 +59,29 @@ function AppContent() {
   const isLandingPage = location.pathname === '/';
 
   return (
-    <div className="bg-[#020617] text-slate-200 font-inter min-h-screen flex flex-col w-full selection:bg-indigo-500/30">
-      <main className="flex-grow flex flex-col w-full">
+    <div className="bg-[#020617] text-slate-200 font-inter min-h-screen flex w-full selection:bg-indigo-500/30">
+      <main className="flex-grow flex w-full">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/lawyers" element={<LawyerDirectory />} />
           <Route path="/lawyers/:id" element={<LawyerProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route 
-            path="/my-cases" 
+          <Route
+            path="/my-cases"
             element={
               <ProtectedRoute allowedRoles={['Lawyer', 'lawyer']}>
                 <MyCases />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/case-curator" 
+          <Route
+            path="/case-curator"
             element={
               <ProtectedRoute>
                 <CaseCurator />
               </ProtectedRoute>
-            } 
+            }
           />
           <Route path="/case-search" element={<CaseSearch />} />
           <Route path="/statutes" element={<Statutes />} />
@@ -100,7 +100,7 @@ function AppContent() {
               <Profile />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/pricing" element={<div className="min-h-screen flex items-center justify-center text-white">Pricing Page (Coming Soon)</div>} />
         </Routes>
       </main>
@@ -111,7 +111,7 @@ function AppContent() {
           <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-4 md:mb-0">
             © 2024 VakeelLink Legal AI. Premium Dashboard Experience.
           </span>
-          <div className="flex gap-8">
+          <div className="flex gap-6">
             <a className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white transition-colors" href="#">Ethics</a>
             <a className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white transition-colors" href="#">Terms</a>
             <a className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-white transition-colors" href="#">Support</a>

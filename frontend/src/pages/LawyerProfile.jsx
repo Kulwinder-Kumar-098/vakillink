@@ -17,6 +17,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import UserSidebar from '../components/UserSidebar';
+import { apiUrl } from '../lib/api';
 
 export default function LawyerProfile() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export default function LawyerProfile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/lawyers/${id}`);
+        const res = await fetch(apiUrl(`/api/v1/lawyers/${id}`));
         if (!res.ok) throw new Error('Failed to fetch profile');
         const data = await res.json();
         setLawyer(data);

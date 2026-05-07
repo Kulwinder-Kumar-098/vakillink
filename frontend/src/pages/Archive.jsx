@@ -18,6 +18,7 @@ import {
   Plus,
   X
 } from 'lucide-react';
+import { API_BASE_URL } from '../lib/api';
 
 const MOCK_CASES = [
   {
@@ -66,7 +67,7 @@ const Archive = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [selectedViewItem, setSelectedViewItem] = useState(null);
 
-  const API_BASE = 'http://127.0.0.1:9000/api/v1';
+  const API_BASE = `${API_BASE_URL}/api/v1`;
 
   const fetchData = async () => {
     setLoading(true);

@@ -15,7 +15,7 @@ class Consultation(BaseModel):
     case_domain: str
     fee: str
 
-@router.get("/", response_model=List[Dict[str, Any]])
+@router.get("/", response_model=List[dict[str, Any]])
 async def get_my_consultations(user: Any = Depends(get_current_user)):
     """
     Fetch consultations for the current user.
@@ -46,7 +46,7 @@ async def get_my_consultations(user: Any = Depends(get_current_user)):
 
 @router.post("/")
 async def create_consultation(
-    consultation: Dict[str, Any], 
+    consultation: dict[str, Any], 
     user: Any = Depends(get_current_user)
 ):
     """
