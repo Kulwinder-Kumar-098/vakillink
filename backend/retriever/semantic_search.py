@@ -107,6 +107,7 @@ def semantic_search(
             "acts":        chunk.get("acts", ""),
             "sections":    chunk.get("sections", ""),
             "year":        chunk.get("year", ""),
+            "court":       chunk.get("court", "N/A"),
         })
 
         if len(results) >= k:

@@ -50,7 +50,7 @@ class PipelineSettings(BaseSettings):
 
     # ── RAG tuning ────────────────────────────────────────────────────────────
     TOP_K_RESULTS:        int   = 5
-    SIMILARITY_THRESHOLD: float = 0.35
+    SIMILARITY_THRESHOLD: float = 0.2
     CHUNK_SIZE_TOKENS:    int   = 400   # target tokens per chunk
     CHUNK_OVERLAP_TOKENS: int   = 50    # overlap between chunks
 

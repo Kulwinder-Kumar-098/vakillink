@@ -10,9 +10,9 @@ Endpoints:
 """
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from api.service import run_rag_pipeline, list_domains
@@ -29,7 +29,7 @@ class QueryRequest(BaseModel):
     query:          str           = Field(..., min_length=3, max_length=2000,
                                           description="The legal question to answer")
     domain:         Optional[str] = Field(None,  description="Filter by legal domain")
-    top_k:          Optional[int] = Field(None,  ge=1, le=20,
+    top_k:          Optional[int] = Field(None,  ge=1, le=50,
                                           description="Number of chunks to retrieve")
     use_hybrid:     bool          = Field(True,  description="Use hybrid BM25+FAISS retrieval")
     use_reranker:   bool          = Field(False, description="Apply cross-encoder reranking")
@@ -60,7 +60,7 @@ class QueryResponse(BaseModel):
 class RetrieveRequest(BaseModel):
     query:         str           = Field(..., min_length=3, max_length=2000)
     domain:        Optional[str] = Field(None)
-    top_k:         Optional[int] = Field(None, ge=1, le=20)
+    top_k:         Optional[int] = Field(None, ge=1, le=50)
     use_hybrid:    bool          = Field(True)
 
 
@@ -73,6 +73,10 @@ class ChunkResult(BaseModel):
     subdomain:   str
     legal_issue: str
     source:      str
+    year:        Optional[str] = None
+    court:       Optional[str] = None
+    acts:        Optional[Any] = None
+    sections:    Optional[Any] = None
 
 
 class IndexHealth(BaseModel):
@@ -98,7 +102,6 @@ async def query_endpoint(request: QueryRequest):
     )
 
     if result["error"] and result["chunks_used"] == 0:
-        # Hard failure (index missing, etc.) — return 503
         if "not found" in result["error"].lower() or "not loaded" in result["error"].lower():
             raise HTTPException(status_code=503, detail=result["error"])
 
@@ -146,6 +149,10 @@ async def retrieve_endpoint(request: RetrieveRequest):
                 subdomain=c.get("subdomain", ""),
                 legal_issue=c.get("legal_issue", ""),
                 source=c.get("source", ""),
+                year=str(c.get("year", "")) if c.get("year") is not None else None,
+                court=c.get("court", ""),
+                acts=c.get("acts"),
+                sections=c.get("sections"),
             )
             for c in chunks
         ]
