@@ -18,7 +18,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import UserSidebar from '../components/UserSidebar';
-import { apiFetch, ragQuery } from '../lib/api';
+import { apiFetch, ragQuery, ragRetrieve } from '../lib/api';
 
 const CaseCurator = () => {
   const [domains, setDomains] = useState(['All']);
@@ -28,8 +28,50 @@ const CaseCurator = () => {
   const [followUp, setFollowUp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [lastQuery, setLastQuery] = useState('');
+  const [lastDomain, setLastDomain] = useState('All');
   const [error, setError] = useState('');
   const [showAllRefs, setShowAllRefs] = useState(false);
+
+  // Live update citations when topK changes, without re-generating the summary
+  useEffect(() => {
+    // Only trigger if we have an existing result and the query/domain haven't changed
+    const isSameContext = result && query.trim() === lastQuery && selectedDomain === lastDomain;
+    
+    if (isSameContext && lastQuery) {
+      const updateCitations = async () => {
+        try {
+          const data = await ragRetrieve({
+            query: lastQuery,
+            top_k: topK,
+            domain: lastDomain === 'All' ? null : lastDomain
+          });
+          
+          setResult(prev => ({
+            ...prev,
+            chunks: data,
+            chunks_used: data.length,
+            // Update sources if they exist in the response or are needed
+            sources: data.map((c, idx) => ({
+              index: idx,
+              case_name: c.case_name,
+              domain: c.domain,
+              subdomain: c.subdomain,
+              legal_issue: c.legal_issue,
+              source: c.source,
+              year: c.year,
+              score: c.score
+            }))
+          }));
+        } catch (err) {
+          console.error("Failed to update citations:", err);
+        }
+      };
+
+      const timer = setTimeout(updateCitations, 400); // Debounce
+      return () => clearTimeout(timer);
+    }
+  }, [topK, result, query, lastQuery, selectedDomain, lastDomain]);
 
   useEffect(() => {
     let cancelled = false;
@@ -145,10 +187,52 @@ const CaseCurator = () => {
   const runSearch = async (overrideQuery) => {
     const q = (overrideQuery ?? query).trim();
     if (q.length < 3) { setError('Please enter a more detailed question.'); return; }
+
+    // If query and domain are the same as last search, just update citations
+    if (result && q === lastQuery && selectedDomain === lastDomain) {
+      setIsLoading(true);
+      setError('');
+      try {
+        const data = await ragRetrieve({
+          query: q,
+          top_k: topK,
+          domain: selectedDomain === 'All' ? null : selectedDomain
+        });
+        setResult(prev => ({
+          ...prev,
+          chunks: data,
+          chunks_used: data.length,
+          sources: data.map((c, idx) => ({
+            index: idx,
+            case_name: c.case_name,
+            domain: c.domain,
+            subdomain: c.subdomain,
+            legal_issue: c.legal_issue,
+            source: c.source,
+            year: c.year,
+            score: c.score
+          }))
+        }));
+        setIsLoading(false);
+        return;
+      } catch (e) {
+        console.error("Retrieve failed, falling back to full query", e);
+      }
+    }
+
     setError(''); setIsLoading(true); setResult(null); setShowAllRefs(false);
     try {
-      const data = await ragQuery({ query: q, top_k: topK, domain: selectedDomain === 'All' ? null : selectedDomain, use_hybrid: true, use_reranker: false, include_chunks: true });
+      const data = await ragQuery({ 
+        query: q, 
+        top_k: topK, 
+        domain: selectedDomain === 'All' ? null : selectedDomain, 
+        use_hybrid: true, 
+        use_reranker: false, 
+        include_chunks: true 
+      });
       setResult(data);
+      setLastQuery(q);
+      setLastDomain(selectedDomain);
     } catch (e) {
       setError(e?.message || 'AI service failed. Please try again.');
     } finally {
@@ -167,7 +251,15 @@ const CaseCurator = () => {
 
   const onFollowUpKeyDown = (e) => { if (e.key === 'Enter') { e.preventDefault(); handleAskFollowUp(); } };
 
-  const handleNewQuestion = () => { setQuery(''); setFollowUp(''); setResult(null); setError(''); setShowAllRefs(false); };
+  const handleNewQuestion = () => { 
+    setQuery(''); 
+    setFollowUp(''); 
+    setResult(null); 
+    setLastQuery('');
+    setLastDomain('All');
+    setError(''); 
+    setShowAllRefs(false); 
+  };
 
   return (
     <div className="flex min-h-screen bg-[#020617] text-slate-200 font-inter">
@@ -230,15 +322,6 @@ const CaseCurator = () => {
                   />
                   <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest w-4 text-center">{topK}</span>
                 </div>
-
-                {/* Advanced Filters button */}
-                <button
-                  type="button"
-                  className="px-5 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-white hover:bg-white/10 transition-all inline-flex items-center gap-2 shrink-0"
-                >
-                  Advanced Filters
-                  <ChevronRight size={14} className="text-slate-500" />
-                </button>
               </div>
             </div>
 
